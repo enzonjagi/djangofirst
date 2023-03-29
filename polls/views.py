@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse, Http404
 from django.template import loader
 
 from .models import Question
@@ -18,9 +18,9 @@ def index(request):
         'latest_question_list': latest_question_list,
     }
 
-    #we could do this
+    # we could use HttpResponse as show below:
     # return HttpResponse(template.render(context, request))
-    # or use render() as a shortcut
+    # or use render() as a shortcut, as shown below:
     return render(request, 'polls/index.html', context)
 
 def detail(request, question_id):
@@ -31,7 +31,19 @@ def detail(request, question_id):
         - question_id: the id of the question
     """
 
-    return HttpResponse("You're looking at question %s." % question_id)
+    # There are two options for this
+    # the try - except option below
+    """
+    try:
+        question = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        raise Http404("Question does not exist")
+    """
+    # or the get_object_or_404() function as implemented below
+    question = get_object_or_404(Question, pk=question_id)
+
+    # return HttpResponse("You're looking at question %s." % question_id)
+    return render(request, 'polls/detail.html', { 'question': question})
 
 def results(request, question_id):
     """Displays the results of a question in detail

@@ -2,67 +2,53 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
+from django.views import generic
 
 from .models import Question, Choice
 
 # Create your views here.
-def index(request):
-    """The index view for the polls app
-    
+class IndexView(generic.ListView):
+    """
+    The index view for the polls app
+
     Attributes:
-        - request: not used yet
+        - template_name: the name of the template we're to view
+        - context_object_name: the latest five questions published
+
+    Methods:
+        - get_queryset(): returns the latest 5 published questions
     """
 
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    template = loader.get_template('polls/index.html')
-    context = {
-        'latest_question_list': latest_question_list,
-    }
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
 
-    # we could use HttpResponse as show below:
-    # return HttpResponse(template.render(context, request))
-    # or use render() as a shortcut, as shown below:
-    return render(request, 'polls/index.html', context)
+    def get_queryset(self):
+        """Return the last five published questions
+        """
 
-def detail(request, question_id):
+        return Question.objects.order_by('-pub_date')[:5]
+
+class DetailView(generic.DetailView):
     """Dispays a question in detail
-    
-    Parameters:
-        - request
-        - question_id: the id of the question
+
+    Attributes:
+        - model: the Question model
+        - template_name: the template to be viewed on screen
     """
 
-    # There are two options for this
-    # the try - except option below
-    """
-    try:
-        question = Question.objects.get(pk=question_id)
-    except Question.DoesNotExist:
-        raise Http404("Question does not exist")
-    """
-    # or the get_object_or_404() function as implemented below
-    question = get_object_or_404(Question, pk=question_id)
+    model = Question
+    template_name = 'polls/detail.html'
 
-    # return HttpResponse("You're looking at question %s." % question_id)
-    return render(request, 'polls/detail.html', { 'question': question})
+class ResultsView(generic.DetailView):
+    """Dispays a question's results in detail
 
-def results(request, question_id):
-    """Displays the results of a question in detail
-    
-    Parameters:
-        - request
-        - question_id: the id of the question
+    Attributes:
+        - model: the Question model
+        - template_name: the template to be viewed on screen
     """
 
-    question = get_object_or_404(Question, pk=question_id)
-
-    return render(
-        request,
-        'polls/results.html',
-        {
-            'question': question
-        }
-    )
+    model = Question
+    template_name = 'polls/results.html'
 
 
 def vote(request, question_id):

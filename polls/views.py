@@ -11,10 +11,6 @@ class IndexView(generic.ListView):
     """
     The index view for the polls app
 
-    Attributes:
-        - template_name: the name of the template we're to view
-        - context_object_name: the latest five questions published
-
     Methods:
         - get_queryset(): returns the latest 5 published questions
     """
@@ -30,10 +26,6 @@ class IndexView(generic.ListView):
 
 class DetailView(generic.DetailView):
     """Dispays a question in detail
-
-    Attributes:
-        - model: the Question model
-        - template_name: the template to be viewed on screen
     """
 
     model = Question
@@ -41,10 +33,6 @@ class DetailView(generic.DetailView):
 
 class ResultsView(generic.DetailView):
     """Dispays a question's results in detail
-
-    Attributes:
-        - model: the Question model
-        - template_name: the template to be viewed on screen
     """
 
     model = Question

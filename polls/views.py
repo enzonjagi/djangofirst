@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
 from django.views import generic
+from django.utils import timezone
 
 from .models import Question, Choice
 
@@ -19,10 +20,21 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        """Return the last five published questions
+        """Return the last five published questions.
+        
+        Description:
+            It checks if the question is published now or before
+            (should not have been published in the future)
+            and then returns the last five published questions.
+        Returns:
+            the last five questions published
         """
 
-        return Question.objects.order_by('-pub_date')[:5]
+        return Question.objects.filter(
+            pub_date__lte=timezone.now()
+        ).order_by(
+            '-pub_date'
+        )[:5]
 
 class DetailView(generic.DetailView):
     """Dispays a question in detail

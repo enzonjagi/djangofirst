@@ -54,9 +54,15 @@ def results(request, question_id):
         - question_id: the id of the question
     """
 
-    response = "You're looking at the results of question %s."
-    
-    return HttpResponse(response % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+
+    return render(
+        request,
+        'polls/results.html',
+        {
+            'question': question
+        }
+    )
 
 
 def vote(request, question_id):
